@@ -22,7 +22,7 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
     ///
     /// @param  kernel_             The Kernel address
     /// @param  rewardTokenVault_   The ERC4626 vault token (sUSDS)
-    /// @param  epochStartDate_     The timestamp when epoch 0 begins (midnight UTC of start date)
+    /// @param  epochStartDate_     The timestamp when first epoch begins (00:00:00 UTC / midnight)
     constructor(
         address kernel_,
         address rewardTokenVault_,
@@ -43,14 +43,14 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
     ///
     /// @param  to_                 Address to transfer rewards to
     /// @param  amount_             Amount of USDS to transfer (or equivalent sUSDS)
-    /// @param  epochStartDates_    Array of epoch start dates that were claimed (for event)
+    /// @param  epochEndDates_      Array of epoch end dates that were claimed (for event)
     /// @param  asVaultToken_       If true, transfer as sUSDS; if false, unwrap to USDS
     /// @return rewardToken         The address of the token transferred (sUSDS if `asVaultToken_`, otherwise USDS)
     /// @return tokensTransferred   The amount of tokens transferred (sUSDS shares if `asVaultToken_`, otherwise USDS)
     function _transferRewards(
         address to_,
         uint256 amount_,
-        uint256[] memory epochStartDates_,
+        uint256[] memory epochEndDates_,
         bool asVaultToken_
     ) internal override returns (address rewardToken, uint256 tokensTransferred) {
         // Early return if no amount to transfer
@@ -73,7 +73,7 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
                 amount_,
                 vaultShares,
                 address(REWARD_TOKEN_VAULT),
-                epochStartDates_
+                epochEndDates_
             );
 
             rewardToken = address(REWARD_TOKEN_VAULT);
@@ -98,7 +98,7 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
             }
 
             // Emit rewards claimed event
-            emit RewardsClaimed(to_, amount_, address(REWARD_TOKEN), epochStartDates_);
+            emit RewardsClaimed(to_, amount_, address(REWARD_TOKEN), epochEndDates_);
 
             rewardToken = address(REWARD_TOKEN);
             tokensTransferred = amount_;
