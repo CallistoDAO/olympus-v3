@@ -67,8 +67,8 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
             TRSRY.withdrawReserves(address(this), ERC20(address(REWARD_TOKEN_VAULT)), vaultShares);
             ERC20(address(REWARD_TOKEN_VAULT)).safeTransfer(to_, vaultShares);
 
-            // Emit vault token claimed event
-            emit RewardsClaimedAsVaultToken(
+            // Emit rewards claimed event (`vaultShares` > 0 indicates vault token claim)
+            emit RewardsClaimed(
                 to_,
                 amount_,
                 vaultShares,
@@ -97,8 +97,8 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
                 ERC20(address(REWARD_TOKEN_VAULT)).safeTransfer(address(TRSRY), leftoverShares);
             }
 
-            // Emit rewards claimed event
-            emit RewardsClaimed(to_, amount_, address(REWARD_TOKEN), epochEndDates_);
+            // Emit rewards claimed event (`vaultShares` = 0 indicates underlying token claim)
+            emit RewardsClaimed(to_, amount_, 0, address(REWARD_TOKEN), epochEndDates_);
 
             rewardToken = address(REWARD_TOKEN);
             tokensTransferred = amount_;

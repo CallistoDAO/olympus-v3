@@ -18,30 +18,19 @@ interface IRewardDistributor is IERC165 {
     event MerkleRootSet(uint256 indexed epochEndDate, bytes32 merkleRoot, address rewardToken);
 
     /// @notice Emitted when a user successfully claims their rewards
+    /// @dev    If `vaultShares` is 0, the user claimed as underlying token.
+    ///         If `vaultShares` > 0, the user claimed as vault token.
     ///
     /// @param  user            The address of the user claiming rewards
-    /// @param  totalAmount     The total amount of rewards claimed
-    /// @param  rewardToken     The address of the reward token
+    /// @param  rewardAmount    The total amount of underlying rewards claimed
+    /// @param  vaultShares     The amount of vault shares transferred (0 if claimed as underlying)
+    /// @param  rewardToken     The address of the token transferred (vault token if `vaultShares` > 0, otherwise underlying)
     /// @param  epochEndDates   The epoch end dates claimed for
     event RewardsClaimed(
         address indexed user,
-        uint256 totalAmount,
-        address rewardToken,
-        uint256[] epochEndDates
-    );
-
-    /// @notice Emitted when rewards are claimed as vault tokens
-    ///
-    /// @param  user            The address of the user claiming as vault token
-    /// @param  rewardAmount    The total amount of underlying rewards
-    /// @param  vaultShares     The amount of vault shares issued to the user
-    /// @param  vaultToken      The address of the vault token
-    /// @param  epochEndDates   The epoch end dates claimed for
-    event RewardsClaimedAsVaultToken(
-        address indexed user,
         uint256 rewardAmount,
         uint256 vaultShares,
-        address vaultToken,
+        address rewardToken,
         uint256[] epochEndDates
     );
 
