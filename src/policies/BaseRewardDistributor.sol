@@ -41,6 +41,9 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
     /// @notice The reward token vault
     IERC4626 public immutable REWARD_TOKEN_VAULT;
 
+    /// @notice Timestamp when first epoch begins (00:00:00 UTC)
+    uint40 public immutable EPOCH_START_DATE;
+
     /// @notice Mapping from epochEndDate => merkle root
     mapping(uint256 epochEndDate => bytes32 merkleRoot) public epochMerkleRoots;
 
@@ -49,9 +52,6 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
 
     /// @notice Last epoch end date for which a merkle root was set
     uint40 public lastEpochEndDate;
-
-    /// @notice Timestamp when first epoch begins (00:00:00 UTC)
-    uint40 public immutable EPOCH_START_DATE;
 
     // ========== MODIFIERS ========== //
 
