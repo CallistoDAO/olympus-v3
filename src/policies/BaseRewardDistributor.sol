@@ -247,14 +247,14 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
     ///
     /// @param  epochStartDate_ The epoch start date to validate
     function _validateEpochStartOfDay(uint256 epochStartDate_) internal pure {
-        if (epochStartDate_ % ONE_DAY != 0) revert RewardDistributor_EpochNotEndOfDay();
+        if (epochStartDate_ % ONE_DAY != 0) revert RewardDistributor_InvalidEpochTimestamp();
     }
 
     /// @notice Validate that an epoch end date is at 23:59:59 UTC (end of day)
     ///
     /// @param  epochEndDate_ The epoch end date to validate
     function _validateEpochEndOfDay(uint256 epochEndDate_) internal pure {
-        if ((epochEndDate_ + 1) % ONE_DAY != 0) revert RewardDistributor_EpochNotEndOfDay();
+        if ((epochEndDate_ + 1) % ONE_DAY != 0) revert RewardDistributor_InvalidEpochTimestamp();
     }
 
     /// @notice Validate claim input arrays

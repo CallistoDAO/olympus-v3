@@ -129,7 +129,7 @@ contract RewardDistributorUSDSTest is Test {
 
     function test_constructor_rejects_epoch_not_start_of_day() public {
         uint256 notStartOfDay = startTimestamp + 12 hours; // Not at midnight
-        vm.expectRevert(IRewardDistributor.RewardDistributor_EpochNotEndOfDay.selector);
+        vm.expectRevert(IRewardDistributor.RewardDistributor_InvalidEpochTimestamp.selector);
         new RewardDistributorUSDS(address(kernel), address(sUSDS), notStartOfDay);
     }
 
@@ -220,7 +220,7 @@ contract RewardDistributorUSDSTest is Test {
         vm.assume(secondEpochEndDate > 0);
         vm.assume(secondEpochEndDate < firstEpochEndDate + 1 days);
 
-        // Align to end of day (23:59:59 UTC) to avoid EpochNotEndOfDay error
+        // Align to end of day (23:59:59 UTC) to avoid InvalidEpochTimestamp error
         secondEpochEndDate = uint40((secondEpochEndDate / 1 days) * 1 days + 1 days - 1);
 
         // Skip if the aligned value equals firstEpochEndDate (already set)
@@ -238,7 +238,7 @@ contract RewardDistributorUSDSTest is Test {
         uint40 epochEndDate = startTimestamp + 12 hours; // Not at end of day
 
         vm.prank(admin);
-        vm.expectRevert(IRewardDistributor.RewardDistributor_EpochNotEndOfDay.selector);
+        vm.expectRevert(IRewardDistributor.RewardDistributor_InvalidEpochTimestamp.selector);
         distributor.endEpoch(epochEndDate, bytes32(uint256(1)));
     }
 

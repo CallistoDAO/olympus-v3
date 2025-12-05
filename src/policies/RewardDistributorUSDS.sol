@@ -68,13 +68,7 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
             ERC20(address(REWARD_TOKEN_VAULT)).safeTransfer(to_, vaultShares);
 
             // Emit rewards claimed event (`vaultShares` > 0 indicates vault token claim)
-            emit RewardsClaimed(
-                to_,
-                amount_,
-                vaultShares,
-                address(REWARD_TOKEN_VAULT),
-                epochEndDates_
-            );
+            emit RewardsClaimed(to_, amount_, vaultShares, epochEndDates_);
 
             rewardToken = address(REWARD_TOKEN_VAULT);
             tokensTransferred = vaultShares;
@@ -98,7 +92,7 @@ contract RewardDistributorUSDS is BaseRewardDistributor {
             }
 
             // Emit rewards claimed event (`vaultShares` = 0 indicates underlying token claim)
-            emit RewardsClaimed(to_, amount_, 0, address(REWARD_TOKEN), epochEndDates_);
+            emit RewardsClaimed(to_, amount_, 0, epochEndDates_);
 
             rewardToken = address(REWARD_TOKEN);
             tokensTransferred = amount_;

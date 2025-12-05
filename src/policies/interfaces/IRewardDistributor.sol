@@ -24,13 +24,11 @@ interface IRewardDistributor is IERC165 {
     /// @param  user            The address of the user claiming rewards
     /// @param  rewardAmount    The total amount of underlying rewards claimed
     /// @param  vaultShares     The amount of vault shares transferred (0 if claimed as underlying)
-    /// @param  rewardToken     The address of the token transferred (vault token if `vaultShares` > 0, otherwise underlying)
     /// @param  epochEndDates   The epoch end dates claimed for
     event RewardsClaimed(
         address indexed user,
         uint256 rewardAmount,
         uint256 vaultShares,
-        address rewardToken,
         uint256[] epochEndDates
     );
 
@@ -61,8 +59,8 @@ interface IRewardDistributor is IERC165 {
     /// @notice Thrown when ending an epoch before required time has elapsed
     error RewardDistributor_EpochTooEarly();
 
-    /// @notice Thrown when the epoch end date is not at the end of a day (23:59:59 UTC)
-    error RewardDistributor_EpochNotEndOfDay();
+    /// @notice Thrown when the epoch timestamp is invalid (not at day boundary)
+    error RewardDistributor_InvalidEpochTimestamp();
 
     /// @notice Thrown when the epoch start date is zero
     error RewardDistributor_EpochIsZero();
