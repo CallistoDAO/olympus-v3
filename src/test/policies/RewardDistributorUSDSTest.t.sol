@@ -147,6 +147,57 @@ contract RewardDistributorUSDSTest is Test {
         assertEq(distributor.lastEpochEndDate(), epochEndDate);
     }
 
+    function testFuzz_endEpoch_success_any_valid_epoch(uint8 n) public {
+        // Bound n to reasonable range (1 to 100 epochs)
+        vm.assume(n >= 1 && n <= 100);
+
+        // Calculate valid epoch end date: startTimestamp + n * 1 days - 1
+        // This gives us 23:59:59 UTC of day n
+        uint40 epochEndDate = startTimestamp + uint40(n) * 1 days - 1;
+
+        bytes32 root = bytes32(uint256(n));
+
+        vm.prank(admin);
+        distributor.endEpoch(epochEndDate, root);
+
+        assertEq(distributor.epochMerkleRoots(epochEndDate), root);
+        assertEq(distributor.lastEpochEndDate(), epochEndDate);
+    }
+
+    function test_endEpoch_multiple_epochs_sequential() public {
+        uint40 epoch1EndDate = _firstEpochEndDate();
+        uint40 epoch2EndDate = epoch1EndDate + 1 days;
+        uint40 epoch3EndDate = epoch2EndDate + 1 days;
+
+        bytes32 root1 = bytes32(uint256(1));
+        bytes32 root2 = bytes32(uint256(2));
+        bytes32 root3 = bytes32(uint256(3));
+
+        vm.startPrank(admin);
+
+        // End epoch 1
+        distributor.endEpoch(epoch1EndDate, root1);
+        assertEq(distributor.epochMerkleRoots(epoch1EndDate), root1);
+        assertEq(distributor.lastEpochEndDate(), epoch1EndDate);
+
+        // End epoch 2
+        distributor.endEpoch(epoch2EndDate, root2);
+        assertEq(distributor.epochMerkleRoots(epoch2EndDate), root2);
+        assertEq(distributor.lastEpochEndDate(), epoch2EndDate);
+
+        // End epoch 3
+        distributor.endEpoch(epoch3EndDate, root3);
+        assertEq(distributor.epochMerkleRoots(epoch3EndDate), root3);
+        assertEq(distributor.lastEpochEndDate(), epoch3EndDate);
+
+        vm.stopPrank();
+
+        // Verify all roots are still set correctly
+        assertEq(distributor.epochMerkleRoots(epoch1EndDate), root1);
+        assertEq(distributor.epochMerkleRoots(epoch2EndDate), root2);
+        assertEq(distributor.epochMerkleRoots(epoch3EndDate), root3);
+    }
+
     function testFuzz_endEpoch_reverts_unauthorized(address caller) public {
         // Skip if caller has the merkle updater role
         vm.assume(caller != admin);
