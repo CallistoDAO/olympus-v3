@@ -29,8 +29,8 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
     /// @notice Role that can update merkle roots
     bytes32 public constant ROLE_MERKLE_UPDATER = "rewards_merkle_updater";
 
-    /// @notice One day in seconds
-    uint40 public constant ONE_DAY = 1 days;
+    /// @notice Minimum epoch duration
+    uint40 public constant MIN_EPOCH_DURATION = 1 days;
 
     /// @notice The TRSRY module
     TRSRYv1 internal TRSRY;
@@ -146,7 +146,7 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
         _validateEpochEndOfDay(epochEndDate_);
 
         // Validate epochEndDate is at least 1 day after lastEpochEndDate
-        if (epochEndDate_ < lastEpochEndDate + ONE_DAY) {
+        if (epochEndDate_ < lastEpochEndDate + MIN_EPOCH_DURATION) {
             revert RewardDistributor_EpochTooEarly();
         }
 
@@ -247,14 +247,14 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
     ///
     /// @param  epochStartDate_ The epoch start date to validate
     function _validateEpochStartOfDay(uint256 epochStartDate_) internal pure {
-        if (epochStartDate_ % ONE_DAY != 0) revert RewardDistributor_InvalidEpochTimestamp();
+        if (epochStartDate_ % 1 days != 0) revert RewardDistributor_InvalidEpochTimestamp();
     }
 
     /// @notice Validate that an epoch end date is at 23:59:59 UTC (end of day)
     ///
     /// @param  epochEndDate_ The epoch end date to validate
     function _validateEpochEndOfDay(uint256 epochEndDate_) internal pure {
-        if ((epochEndDate_ + 1) % ONE_DAY != 0) revert RewardDistributor_InvalidEpochTimestamp();
+        if ((epochEndDate_ + 1) % 1 days != 0) revert RewardDistributor_InvalidEpochTimestamp();
     }
 
     /// @notice Validate claim input arrays
