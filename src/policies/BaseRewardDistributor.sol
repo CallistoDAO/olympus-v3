@@ -29,6 +29,9 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
     /// @notice Role that can update merkle roots
     bytes32 public constant ROLE_MERKLE_UPDATER = "rewards_merkle_updater";
 
+    /// @notice Minimum epoch duration
+    uint40 public constant MIN_EPOCH_DURATION = 1 days;
+
     /// @notice The TRSRY module
     TRSRYv1 internal TRSRY;
 
@@ -76,7 +79,7 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
         REWARD_TOKEN_VAULT = IERC4626(rewardTokenVault_);
         // Note: epochStartDate_ is truncated to uint40. Max uint40 is ~year 36812.
         EPOCH_START_DATE = uint40(epochStartDate_);
-        lastEpochStartDate = EPOCH_START_DATE - 1 days;
+        lastEpochStartDate = EPOCH_START_DATE - MIN_EPOCH_DURATION;
         // Disabled by default by PolicyEnabler
     }
 
@@ -149,8 +152,8 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
             revert RewardDistributor_EpochTooEarly();
         }
 
-        // Validate epochStartDate is at least 1 day after lastEpochStartDate
-        if (epochStartDate_ < lastEpochStartDate + 1 days) {
+        // Validate epochStartDate is at least 1 epoch after lastEpochStartDate
+        if (epochStartDate_ < lastEpochStartDate + MIN_EPOCH_DURATION) {
             revert RewardDistributor_EpochTooEarly();
         }
 
@@ -251,7 +254,7 @@ abstract contract BaseRewardDistributor is Policy, PolicyEnabler, IRewardDistrib
     ///
     /// @param  epochStartDate_ The epoch start date to validate
     function _validateEpochStartOfDay(uint256 epochStartDate_) internal pure {
-        if (epochStartDate_ % 1 days != 0) revert RewardDistributor_EpochNotStartOfDay();
+        if (epochStartDate_ % MIN_EPOCH_DURATION != 0) revert RewardDistributor_EpochNotStartOfDay();
     }
 
     /// @notice Validate claim input arrays
